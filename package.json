@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "npx nodemon app.ts",
+    "start": "npx nodemon src/app.ts",
     "test": "npx vitest",
-    "seed": "ts-node runSeed.ts"
+    "seed": "ts-node src/runSeed.ts"
   },
   "license": "MIT",
   "dependencies": {
