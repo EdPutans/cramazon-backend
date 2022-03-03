@@ -1,5 +1,5 @@
-import { test, describe, expect, it, beforeAll } from 'vitest'
-import { getItemsWithQuery, prisma } from './queries'
+import { test, describe, expect, it } from 'vitest'
+import { getItemsWithQuery } from './queries'
 import { seed } from './seed';
 import { ItemWithOrderers } from './types';
 
@@ -19,6 +19,7 @@ describe('getItemsWithQuery', async () => {
       image: banana.image,
       title: banana.title,
       orders: [{
+        quantity: order1.quantity,
         id: order1.id,
         userId: steve.id,
         itemId: banana.id,
@@ -33,12 +34,14 @@ describe('getItemsWithQuery', async () => {
         id: order2.id,
         itemId: mango.id,
         userId: steve.id,
+        quantity: order2.quantity,
         user: steve
       },
       {
         id: order3.id,
         itemId: mango.id,
         userId: ed.id,
+        quantity: order3.quantity,
         user: ed
       }],
     }, {
@@ -58,6 +61,7 @@ describe('getItemsWithQuery', async () => {
       id: banana.id,
       image: 'banana.png',
       orders: [{
+        quantity: order1.quantity,
         id: order1.id,
         userId: steve.id,
         itemId: banana.id,
@@ -69,6 +73,7 @@ describe('getItemsWithQuery', async () => {
       image: "mango.png",
       title: "mango",
       orders: [{
+        quantity: order2.quantity,
         id: order2.id,
         itemId: mango.id,
         userId: steve.id,
@@ -86,6 +91,7 @@ describe('getItemsWithQuery', async () => {
       id: banana.id,
       image: 'banana.png',
       orders: [{
+        quantity: order1.quantity,
         id: order1.id,
         userId: steve.id,
         itemId: banana.id,

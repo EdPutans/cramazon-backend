@@ -4,19 +4,18 @@ import { NoId } from './types';
 export const prisma = new PrismaClient();
 
 export const getItemsWithQuery = async (query?: any /*🤮*/): Promise<Item[]> => {
-  const where: Object | undefined = query && Object.keys(query) ?
+  const where: Prisma.ItemWhereInput | undefined = query && Object.keys(query).length ?
     {
+
       orders: {
-        every: {
-          query
-        }
+        every: query
       }
     } : undefined;
 
   const items = await prisma.item.findMany({
     include: {
       orders: {
-        include: {
+        select: {
           user: true
         },
         where: {
@@ -34,7 +33,11 @@ export const getItemsWithQuery = async (query?: any /*🤮*/): Promise<Item[]> =
 export const findUserBy = async (where: Prisma.UserWhereInput): Promise<User | null> => await prisma.user.findFirst({
   where,
   include: {
-    orders: true
+    orders: {
+      include: {
+        item: true
+      }
+    },
   }
 });
 
@@ -42,16 +45,30 @@ export const findItemBy = async (where: Prisma.ItemWhereInput): Promise<Item | n
   where,
   include: {
     orders: {
-      include: { user: true }
+      select: { user: true }
     }
   }
 });
 
-export const findOrderBy = async (where: Prisma.OrderWhereInput): Promise<Order | null> =>
+export type MinimisedOrder = Omit<Order, 'userId' | 'itemId'> & { item: Item, user: User };
+export const findOrders = async (where?: Prisma.OrderWhereInput | undefined): Promise<MinimisedOrder[]> => await prisma.order.findMany({
+  where,
+  select: {
+    id: true,
+    quantity: true,
+    item: true,
+    user: true
+  }
+});
+
+
+export const findOrderBy = async (where: Prisma.OrderWhereInput): Promise<MinimisedOrder | null> =>
   await prisma.order.findFirst({
     where,
-    include: {
+    select: {
+      id: true,
       item: true,
+      quantity: true,
       user: true
     }
   });
@@ -62,12 +79,20 @@ export const createUser = async (user: NoId<User>) =>
 export const createItem = async (item: NoId<Item>) =>
   await prisma.item.create({ data: item });
 
-export const createOrder = async ({ userId, itemId }: NoId<Order>) =>
+export type OrderWithUserItem = Order & { user: User, item: Item };
+
+export const createOrder = async ({ userId, itemId, quantity }: NoId<Order>): Promise<OrderWithUserItem> =>
   await prisma.order.create({
     data: {
+      quantity: quantity ?? 1,
       user: { connect: { id: userId } },
       item: { connect: { id: itemId } },
     },
     include: { user: true, item: true }
   });
 
+export const updateOrder = async (where: Prisma.OrderWhereUniqueInput, data: Partial<Order>) =>
+  prisma.order.update({ where, data });
+
+export const deleteOrder = async (where: Prisma.OrderWhereUniqueInput) =>
+  await prisma.order.delete({ where });

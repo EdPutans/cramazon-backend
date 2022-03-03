@@ -1,6 +1,5 @@
-import { prisma } from './app';
+import { createOrder, prisma } from './queries';
 
-// TODO: replace with stuff from queries
 export const seed = async () => {
   await prisma.order.deleteMany({})
   await prisma.item.deleteMany({})
@@ -15,29 +14,20 @@ export const seed = async () => {
   const mango = await prisma.item.create({ data: { title: 'mango', image: 'mango.png' } })
   const apple = await prisma.item.create({ data: { title: 'apple', image: 'apple.png' } })
 
-  const order1 = await prisma.order.create({
-    data: {
-      user: { connect: { id: steve.id } },
-      item: { connect: { id: banana.id } },
-    },
-    include: { user: true, item: true }
-  });
+  const order1 = await createOrder({ itemId: banana.id, userId: steve.id, quantity: 1 });
+  const order2 = await createOrder({ itemId: mango.id, userId: steve.id, quantity: 1 });
+  const order3 = await createOrder({ itemId: mango.id, userId: ed.id, quantity: 2 });
 
-  const order2 = await prisma.order.create({
-    data: {
-      user: { connect: { id: steve.id } },
-      item: { connect: { id: mango.id } },
-    },
-    include: { user: true, item: true }
-  });
-
-  const order3 = await prisma.order.create({
-    data: {
-      user: { connect: { id: ed.id } },
-      item: { connect: { id: mango.id } },
-    },
-    include: { user: true, item: true }
-  });
-
-  return { steve, ed, nico, kushtrim, banana, mango, apple, order1, order2, order3 }
+  return {
+    steve,
+    ed,
+    nico,
+    kushtrim,
+    banana,
+    mango,
+    apple,
+    order1,
+    order2,
+    order3
+  }
 }
