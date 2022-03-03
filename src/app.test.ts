@@ -3,10 +3,6 @@ import { getItemsWithQuery } from './queries'
 import { seed } from './seed';
 import { ItemWithOrderers } from './types';
 
-test('should work as expected', () => {
-  expect(Math.sqrt(4)).toBe(2);
-})
-
 describe('getItemsWithQuery', async () => {
   const seeder = await seed();
   const { banana, mango, apple, order1, order2, order3, ed, steve, } = seeder;
